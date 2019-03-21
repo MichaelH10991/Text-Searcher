@@ -1,0 +1,2 @@
+https://www.crummy.com/software/BeautifulSoup/
+https://github.com/stasov/process-commoncrawl-with-emr
