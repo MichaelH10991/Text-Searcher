@@ -5,9 +5,10 @@ import requests as rq
 import datetime
 
 file_path = 'input/urls.txt'
-compare_string = 'hate'
-happy_array = ['beautiful', 'cool']
-sad_array = ['hate']
+happy = 'resources/happy_words.txt'
+sad = 'resources/sad_words.txt'
+compare_string = ''
+
 print('the word to compare: \"{}\"'.format(compare_string))
 
 
@@ -16,6 +17,10 @@ def get_urls(path):
     with open(path) as f:
         content = f.readlines()
     return [x.strip() for x in content]
+
+
+happy_array = get_urls(happy)
+sad_array = get_urls(sad)
 
 
 def extract_words(html_doc):
@@ -64,27 +69,30 @@ def process(urls):
         else:
             print('no \"{}\"\'s found in {}'.format(compare_string, url))
 
+
+def calculate_mood(urls):
+
+    for url in urls:
+        raw = rq.get(url).text
+        words = extract_words(raw)
         mood_items = mood(happy_array, sad_array, words, url)
         print('{} has {} matches of happy words and {} matches of sad words'.format(mood_items[0], mood_items[1],
-              mood_items[2]))
-
-        if not mood_items[1] == 0 or not mood_items[2] == 0:
-            happy_ratio = (mood_items[1] + mood_items[2]) / mood_items[1]
-            sad_ratio = (mood_items[1] + mood_items[2]) / mood_items[2]
-            print('happy words {}%'.format(happy_ratio))
-            print('sad words {}%'.format(sad_ratio))
-        elif mood_items[1] > 0:
-            print('happy words 100%')
-        else:
-            print('sad words 100%')
-
-
+                                                                                    mood_items[2]))
+        try:
+            if not mood_items[1] == 0 or not mood_items[2] == 0:
+                happy_ratio = mood_items[1] / (mood_items[1] + mood_items[2])
+                sad_ratio = mood_items[2] / (mood_items[1] + mood_items[2])
+                print('happy words {}%'.format(happy_ratio))
+                print('sad words {}%'.format(sad_ratio))
+        except ZeroDivisionError:
+            print('there is a 0 somewhere')
 
 
 def run():
     # returns list of urls
     urls = get_urls(file_path)
-    process(urls)
+    calculate_mood(urls)
+    #process(urls)
 
     # for url in urls:
     #     print('{}{}'.format(urlsplit(url).netloc, urlsplit(url).path))
