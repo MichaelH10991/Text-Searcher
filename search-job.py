@@ -41,9 +41,11 @@ def generate(compare, words):
 
 def mood(happy, sad, words, url):
     """I dunno if this works lol but it should compute occurences of each word in the array provided"""
-    print('mood')
     happy_word_matches = 0
     sad_word_matches = 0
+
+    print(happy[1])
+    print(words[1])
 
     for i in range(len(happy)):
         for word in words:
@@ -92,7 +94,7 @@ def calculate_mood(urls):
             print('there is a 0 somewhere')
 
         if happy_ratio > sad_ratio:
-            print('this is a sad site')
+            print('this is a happy site')
         elif happy_ratio < sad_ratio:
             print('this is a sad website')
         else:
