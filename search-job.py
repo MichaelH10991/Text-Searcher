@@ -4,7 +4,7 @@ import requests as rq
 import datetime
 
 file_path = 'input/urls.txt'
-compare_string = 'it'
+compare_string = 'crack'
 print('the word to compare {}'.format(compare_string))
 
 
@@ -32,6 +32,7 @@ def generate(compare, words):
 
 
 def process(urls):
+    """processes each by finding sentences where the word in question appears"""
     for url in urls:
         url = url
         raw = rq.get(url).text
