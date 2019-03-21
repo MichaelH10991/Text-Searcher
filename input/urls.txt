@@ -1,2 +1,5 @@
 https://www.crummy.com/software/BeautifulSoup/
 https://github.com/stasov/process-commoncrawl-with-emr
+https://www.telegraph.co.uk/news/
+https://aws.amazon.com/blogs/big-data/using-ipython-notebook-to-analyze-data-with-amazon-emr/
+https://www.stat.berkeley.edu/~spector/extension/python/notes/node29.html
