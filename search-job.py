@@ -41,6 +41,7 @@ def generate(compare, words):
 
 def mood(happy, sad, words, url):
     """I dunno if this works lol but it should compute occurences of each word in the array provided"""
+    print('mood')
     happy_word_matches = 0
     sad_word_matches = 0
 
@@ -54,6 +55,8 @@ def mood(happy, sad, words, url):
             if word == sad[i]:
                 sad_word_matches += 1
 
+    print(sad_word_matches)
+    print(happy_word_matches)
     return [url, happy_word_matches, sad_word_matches]
 
 
@@ -71,7 +74,8 @@ def process(urls):
 
 
 def calculate_mood(urls):
-
+    happy_ratio = 0
+    sad_ratio = 0
     for url in urls:
         raw = rq.get(url).text
         words = extract_words(raw)
@@ -86,6 +90,13 @@ def calculate_mood(urls):
                 print('sad words {}%'.format(sad_ratio))
         except ZeroDivisionError:
             print('there is a 0 somewhere')
+
+        if happy_ratio > sad_ratio:
+            print('this is a sad site')
+        elif happy_ratio < sad_ratio:
+            print('this is a sad website')
+        else:
+            print('this is a neutral website')
 
 
 def run():
