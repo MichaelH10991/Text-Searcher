@@ -4,7 +4,8 @@ import requests as rq
 import datetime
 
 file_path = 'input/urls.txt'
-compare_string = 'Beautiful'
+compare_string = 'it'
+print('the word to compare {}'.format(compare_string))
 
 
 def get_urls(path):
@@ -17,37 +18,29 @@ def get_urls(path):
 def extract_words(html_doc):
     """returns a list of lines"""
     # list of each word
-    words = bs(html_doc, 'html.parser').get_text().replace('\n', ' ').strip().split(' ')
-    # lines = bs(html_doc, 'html.parser').get_text().strip().split('\n')
-    # for line in lines:
-    #     line.replace('\n', ' ').replace('\r', '')
-    # words = lines.split('\n')
-    return words
-
-    #return bs(html_doc, 'html.parser').get_text().strip('\n').split(" ")
+    return bs(html_doc, 'html.parser').get_text().lower().replace('\n', ' ').strip().split(' ')
 
 
-def generate(compare, words, url):
-    sentence = []
-    print('the word to compare: ', compare)
+def generate(compare, words):
+    """returns a list of found words with the 10 words either side"""
+    sentences = []
     for i in range(len(words)):
         if words[i] == compare:
-            sentence = words[i-5:i+5]
-            url = url
-            return '{} : {}'.format(sentence, url)
+            sentence = words[i-10:i+10]
+            sentences.append(sentence)
+    return sentences
 
 
 def process(urls):
-    count = 0
     for url in urls:
-        count += 1
         url = url
         raw = rq.get(url).text
         words = extract_words(raw)
-        statement = generate(compare_string, words, url)
-        print('url {} : {} '.format(count, statement))
-
-    #return '{} : {}'.format(statement[0], statement[1])
+        found_sentences = generate(compare_string, words)
+        if found_sentences:
+            print('{} \"{}\"\'s found in {} \n extract:{}'.format(len(found_sentences), compare_string, url, found_sentences))
+        else:
+            print('no \"{}\"\'s found in {}'.format(compare_string, url))
 
 
 def run():
