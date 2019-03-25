@@ -26,7 +26,7 @@ sad_array = get_urls(sad)
 def extract_words(html_doc):
     """returns a list of lines"""
     # list of each word
-    return bs(html_doc, 'html.parser').get_text().lower().replace('\n', ' ').strip().split(' ')
+    return bs(html_doc.text, 'html.parser').get_text().lower().replace('\n', ' ').strip().split(' ')
 
 
 def generate(compare, words):
@@ -39,13 +39,10 @@ def generate(compare, words):
     return sentences
 
 
-def mood(happy, sad, words, url):
+def mood(happy, sad, words):
     """I dunno if this works lol but it should compute occurences of each word in the array provided"""
     happy_word_matches = 0
     sad_word_matches = 0
-
-    print(happy[1])
-    print(words[1])
 
     for i in range(len(happy)):
         for word in words:
@@ -57,15 +54,14 @@ def mood(happy, sad, words, url):
             if word == sad[i]:
                 sad_word_matches += 1
 
-    print(sad_word_matches)
-    print(happy_word_matches)
-    return [url, happy_word_matches, sad_word_matches]
+    return [happy_word_matches, sad_word_matches]
 
 
 def process(urls):
     """processes each by finding sentences where the word in question appears"""
     for url in urls:
         url = url
+
         raw = rq.get(url).text
         words = extract_words(raw)
         found_sentences = generate(compare_string, words)
@@ -75,40 +71,45 @@ def process(urls):
             print('no \"{}\"\'s found in {}'.format(compare_string, url))
 
 
-def calculate_mood(urls):
+def calculate_mood(url):
     happy_ratio = 0
     sad_ratio = 0
-    for url in urls:
-        raw = rq.get(url).text
-        words = extract_words(raw)
-        mood_items = mood(happy_array, sad_array, words, url)
-        print('{} has {} matches of happy words and {} matches of sad words'.format(mood_items[0], mood_items[1],
-                                                                                    mood_items[2]))
-        try:
-            if not mood_items[1] == 0 or not mood_items[2] == 0:
-                happy_ratio = mood_items[1] / (mood_items[1] + mood_items[2])
-                sad_ratio = mood_items[2] / (mood_items[1] + mood_items[2])
-                print('happy words {}%'.format(happy_ratio))
-                print('sad words {}%'.format(sad_ratio))
-        except ZeroDivisionError:
-            print('there is a 0 somewhere')
 
-        if happy_ratio > sad_ratio:
-            print('this is a happy site')
-        elif happy_ratio < sad_ratio:
-            print('this is a sad website')
-        else:
-            print('this is a neutral website')
+    raw = rq.get(url)
+    print("status code: {}".format(raw.status_code))
+    words = extract_words(raw)
+    mood_items = mood(happy_array, sad_array, words)
+    happy_words = mood_items[0]
+    sad_words = mood_items[1]
+    print('{} has {} matches of happy words and {} matches of sad words'.format(url, happy_words,
+                                                                                    sad_words))
+    try:
+        if not happy_words == 0 or not sad_words == 0:
+            happy_ratio = happy_words / (happy_words + sad_words)
+            sad_ratio = sad_words / (happy_words + sad_words)
+            print('happy words {}%'.format(happy_ratio))
+            print('sad words {}%'.format(sad_ratio))
+    except ZeroDivisionError:
+        print('there is a 0 somewhere')
+
+    if happy_ratio > sad_ratio:
+        print('this is a happy site')
+    elif happy_ratio < sad_ratio:
+        print('this is a sad website')
+    else:
+        print('this is a neutral website')
 
 
 def run():
     # returns list of urls
     urls = get_urls(file_path)
-    calculate_mood(urls)
-    #process(urls)
 
-    # for url in urls:
-    #     print('{}{}'.format(urlsplit(url).netloc, urlsplit(url).path))
+    for url in urls:
+
+        calculate_mood(url)
+        print("=============================================================================")
+
+    #process(urls)
 
 
 run()
